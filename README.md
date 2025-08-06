@@ -1,6 +1,6 @@
 # **📱 SmartScan AI Frontend: A Cross-Platform Client for AI Services**
 
-This repository contains the client-side application for the **[SmartScan AI](https://www.google.com/search?q=https://github.com/your-repo/smartscan-ai-fullstack-repo)** project. It showcases expertise in building a modern, cross-platform user interface with a single codebase that effectively communicates with a decoupled backend and AI engine.
+This repository contains the client-side application for the **[SmartScan AI](https://smartscan-ai-frontend.vercel.app/onboarding)** project. It showcases expertise in building a modern, cross-platform user interface with a single codebase that effectively communicates with a decoupled backend and AI engine.
 
 ## **🛠️ Tech Stack & Architecture**
 
@@ -42,36 +42,6 @@ This frontend demonstrates a range of critical development skills:
   - **Clean UI/UX Design:** Implements a modern, clean interface focused on user flow and accessibility.
   - **Scalable State Management:** The architecture is designed to easily grow with future features without becoming complex.
 
-## **💻 Local Development**
-
-### Prerequisites
-
-  - Node.js 18+
-
-### Setup
-
-To run the application locally, first clone the repository and install dependencies.
-
-```bash
-# Install dependencies
-npm install
-
-# Start the development server
-npm run web            # Web development
-npm run android        # Android development
-npm run ios           # iOS development
-
-# Build for production
-npm run build         # Web build for deployment
-```
-
-## **🌐 Environment Variables**
-
-Configure the URL for your backend API to enable full functionality. This practice demonstrates an understanding of dynamic API endpoint configuration for different environments.
-
-```env
-BACKEND_API_URL=https://your-backend-url.onrender.com
-```
 
 ## **🚀 Deployment**
 
