@@ -55,11 +55,23 @@ export default function ResultScreen() {
         try {
           console.log("📸 Processing photo... Length:", photo.length);
 
+          // First test if backend is awake
+          console.log("🏥 Testing backend health...");
+          const healthTest = await fetch(
+            "https://smartscan-ai-backend.onrender.com/"
+          );
+          console.log("🏥 Backend health:", await healthTest.text());
+
           // Upload image to ImgBB
           const imageUrl = await uploadToImgbb(photo);
           console.log("🔗 Image uploaded to:", imageUrl);
 
-          // Test direct backend call
+          // Verify image URL is accessible
+          console.log("🔍 Testing image URL accessibility...");
+          const imageTest = await fetch(imageUrl, { method: "HEAD" });
+          console.log("🔍 Image URL status:", imageTest.status);
+
+          // Call AI backend
           console.log("🤖 Calling AI backend...");
           const result = await classifyImage(imageUrl);
           console.log("✅ AI Result received:", result);
@@ -67,7 +79,17 @@ export default function ResultScreen() {
           setLabel(result);
         } catch (e) {
           console.error("❌ Full error details:", e);
-          setLabel(`Error: ${e.message || "Unknown error"}`);
+
+          // Show more specific error based on type
+          if (e.message.includes("502")) {
+            setLabel(
+              "Error: AI service is starting up, please try again in 30 seconds"
+            );
+          } else if (e.message.includes("ImgBB")) {
+            setLabel("Error: Image upload failed");
+          } else {
+            setLabel(`Error: ${e.message || "Unknown error"}`);
+          }
         }
       } else {
         setLabel("No photo provided");
