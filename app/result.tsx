@@ -9,43 +9,65 @@ export default function ResultScreen() {
   const [label, setLabel] = useState<string>("Loading...");
 
   async function uploadToImgbb(base64: string): Promise<string> {
-    const IMGBB_API_KEY = "22c85e650e2337bd33e4ae9477140a51";
-    const res = await fetch(
-      `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
-      {
-        method: "POST",
-        body: new URLSearchParams({ image: base64 }),
+    try {
+      console.log("🔄 Starting ImgBB upload...");
+      const IMGBB_API_KEY = "22c85e650e2337bd33e4ae9477140a51";
+
+      const res = await fetch(
+        `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({ image: base64 }),
+        }
+      );
+
+      console.log("📡 ImgBB response status:", res.status);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("❌ ImgBB error response:", errorText);
+        throw new Error(`ImgBB upload failed: ${res.status} ${res.statusText}`);
       }
-    );
 
-    if (!res.ok) {
-      throw new Error(`ImgBB upload failed: ${res.status} ${res.statusText}`);
+      const data = await res.json();
+      console.log("📊 ImgBB response data:", data);
+
+      if (!data.success) {
+        throw new Error(
+          `ImgBB error: ${data.error?.message || "Upload failed"}`
+        );
+      }
+
+      console.log("✅ Image uploaded successfully:", data.data.url);
+      return data.data.url;
+    } catch (error) {
+      console.error("❌ ImgBB upload error:", error);
+      throw error;
     }
-
-    const data = await res.json();
-    if (!data.success) {
-      throw new Error(`ImgBB error: ${data.error?.message || "Upload failed"}`);
-    }
-
-    return data.data.url;
   }
 
   useEffect(() => {
     async function run() {
       if (photo) {
         try {
-          console.log("📸 Processing photo...");
+          console.log("📸 Processing photo... Length:", photo.length);
+
+          // Upload image to ImgBB
           const imageUrl = await uploadToImgbb(photo);
           console.log("🔗 Image uploaded to:", imageUrl);
 
+          // Test direct backend call
+          console.log("🤖 Calling AI backend...");
           const result = await classifyImage(imageUrl);
-          console.log("🤖 AI Result:", result);
+          console.log("✅ AI Result received:", result);
 
           setLabel(result);
         } catch (e) {
-          console.error("❌ Error in result screen:", e);
-          // Show the actual error message instead of generic "Error"
-          setLabel(`Error: ${e.message}`);
+          console.error("❌ Full error details:", e);
+          setLabel(`Error: ${e.message || "Unknown error"}`);
         }
       } else {
         setLabel("No photo provided");
