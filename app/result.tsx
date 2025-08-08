@@ -17,7 +17,16 @@ export default function ResultScreen() {
         body: new URLSearchParams({ image: base64 }),
       }
     );
+
+    if (!res.ok) {
+      throw new Error(`ImgBB upload failed: ${res.status} ${res.statusText}`);
+    }
+
     const data = await res.json();
+    if (!data.success) {
+      throw new Error(`ImgBB error: ${data.error?.message || "Upload failed"}`);
+    }
+
     return data.data.url;
   }
 
@@ -25,15 +34,21 @@ export default function ResultScreen() {
     async function run() {
       if (photo) {
         try {
+          console.log("📸 Processing photo...");
           const imageUrl = await uploadToImgbb(photo);
-          console.log("Image uploaded to:", imageUrl);
+          console.log("🔗 Image uploaded to:", imageUrl);
+
           const result = await classifyImage(imageUrl);
-          console.log("Replicate result:", result);
+          console.log("🤖 AI Result:", result);
+
           setLabel(result);
         } catch (e) {
-          console.error("Error in result screen:", e);
-          setLabel("Error");
+          console.error("❌ Error in result screen:", e);
+          // Show the actual error message instead of generic "Error"
+          setLabel(`Error: ${e.message}`);
         }
+      } else {
+        setLabel("No photo provided");
       }
     }
     run();
